@@ -1,0 +1,3 @@
+- [x] Change default epochs to 50 in train.py
+- [x] Add early stopping check for 98% validation accuracy in the training loop
+- [x] Test the training script (training started)
