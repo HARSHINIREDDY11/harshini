@@ -138,3 +138,6 @@ plots/
 assets/
 *.log
 .DS_Store
+trashnet_raw/
+trashnet/
+trashnet.zip
