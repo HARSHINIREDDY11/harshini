@@ -179,8 +179,8 @@ def main():
                 break
 
         # Early stopping if target accuracy is reached
-        if val_acc >= 94.0:
-            print(f"Reached target accuracy of 94% at epoch {epoch+1}. Stopping training.")
+        if val_acc >= 95.0:
+            print(f"Reached target accuracy of 95% at epoch {epoch+1}. Stopping training.")
             torch.save(model.state_dict(), "best_model.pth")
             break
 
