@@ -47,7 +47,6 @@ def download_trashnet(target_dir="./trashnet_raw"):
         print("Dataset ready.")
         
         # Cleanup
-        os.remove("trashnet.zip")
         shutil.rmtree(target_dir)
     else:
         print(f"Error: Could not find inner zip at {inner_zip}")
