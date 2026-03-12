@@ -94,12 +94,13 @@ def get_transforms(is_train=True):
     if is_train:
         return A.Compose([
             A.Resize(224, 224),
+            A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1, rotate_limit=45, p=0.5),
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
-            A.Rotate(limit=30, p=0.5),
             A.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1, p=0.5),
             A.GaussianBlur(blur_limit=(3, 7), p=0.3),
             A.RandomBrightnessContrast(p=0.5),
+            A.CoarseDropout(max_holes=8, max_height=32, max_width=32, p=0.5),
             A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
             ToTensorV2()
         ])

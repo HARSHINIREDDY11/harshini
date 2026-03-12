@@ -134,11 +134,24 @@ def main():
 
     model = MultiViewSwin3DCNN(num_classes=num_classes).to(device)
 
-    # Optimizer & Scheduler
-    optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    # Optimizer & Scheduler with Differential Learning Rates
+    # Lower LR for pre-trained backbone, higher LR for new heads
+    backbone_params = []
+    head_params = []
+    for name, param in model.named_parameters():
+        if "backbone" in name:
+            backbone_params.append(param)
+        else:
+            head_params.append(param)
+            
+    optimizer = optim.AdamW([
+        {'params': backbone_params, 'lr': lr * 0.1}, # 1e-5
+        {'params': head_params, 'lr': lr * 10}       # 1e-3
+    ], weight_decay=weight_decay)
+    
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
-    criterion_cls = nn.CrossEntropyLoss()
+    criterion_cls = nn.CrossEntropyLoss(label_smoothing=0.1)
     criterion_seg = DiceLoss()
 
     # Mixed precision scaler

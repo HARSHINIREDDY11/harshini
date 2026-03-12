@@ -5,7 +5,7 @@ import timm
 
 
 class MultiViewSwin3DCNN(nn.Module):
-    def __init__(self, num_classes=10, model_name='swin_tiny_patch4_window7_224', pretrained=True):
+    def __init__(self, num_classes=10, model_name='swin_base_patch4_window7_224', pretrained=True):
         super(MultiViewSwin3DCNN, self).__init__()
 
         # Swin Transformer Backbone (for high accuracy)
@@ -17,20 +17,21 @@ class MultiViewSwin3DCNN(nn.Module):
         self.feat_dim = dummy_out.shape[1]  # Channels (256 for ResNet18)
         self.spatial_dim = dummy_out.shape[2]  # H/W (14 for ResNet18)
 
-        # Multi-View Fusion - 3D CNN (optimized for speed)
+        # Multi-View Fusion - 3D CNN (optimized for accuracy)
         self.fusion_3d = nn.Sequential(
-            nn.Conv3d(self.feat_dim, self.feat_dim // 4, kernel_size=(3, 3, 3), padding=(1, 1, 1)),
-            nn.BatchNorm3d(self.feat_dim // 4),
+            nn.Conv3d(self.feat_dim, self.feat_dim // 2, kernel_size=(3, 3, 3), padding=(1, 1, 1)),
+            nn.BatchNorm3d(self.feat_dim // 2),
             nn.ReLU(inplace=True),
             nn.AdaptiveAvgPool3d((1, 1, 1))  # Reduce to 1D vector
         )
 
         # Classification Head
         self.classifier = nn.Sequential(
-            nn.Linear(self.feat_dim // 4, 128),
+            nn.Linear(self.feat_dim // 2, 512),
+            nn.BatchNorm1d(512),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.3),
-            nn.Linear(128, num_classes)
+            nn.Dropout(0.5),
+            nn.Linear(512, num_classes)
         )
 
         # Optional Segmentation Head (simplified)
